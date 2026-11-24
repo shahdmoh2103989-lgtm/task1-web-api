@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using task1_web_api.Data;
+using task1_web_api.Mapping;
 
 namespace task1_web_api
 {
@@ -9,18 +10,26 @@ namespace task1_web_api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // Database Configuration
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Controllers
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+            // AutoMapper
+            builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
+
+            // OpenAPI
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Logging
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Health Care API Started Successfully");
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();

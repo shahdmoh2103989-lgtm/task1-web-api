@@ -38,6 +38,20 @@ namespace task1_web_api.Migrations
                     b.HasIndex("DoctorId");
 
                     b.ToTable("Appointments");
+
+                    b.HasData(
+                        new
+                        {
+                            PatientId = 1,
+                            DoctorId = 1,
+                            AppointmentDate = new DateTime(2026, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            PatientId = 2,
+                            DoctorId = 2,
+                            AppointmentDate = new DateTime(2026, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("task1_web_api.Models.Doctor", b =>
@@ -50,15 +64,31 @@ namespace task1_web_api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Specialization")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Doctors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Dr. Mahmoud",
+                            Specialization = "Cardiology"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Dr. Mona",
+                            Specialization = "Dentistry"
+                        });
                 });
 
             modelBuilder.Entity("task1_web_api.Models.Patient", b =>
@@ -74,11 +104,26 @@ namespace task1_web_api.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateOfBirth = new DateTime(2000, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Ahmed Mohamed"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DateOfBirth = new DateTime(1998, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Sara Ali"
+                        });
                 });
 
             modelBuilder.Entity("task1_web_api.Models.Appointment", b =>
