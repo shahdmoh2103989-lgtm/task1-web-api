@@ -11,4 +11,4 @@ namespace task1_web_api.Mapping
             CreateMap<Patient, PatientDto>();
         }
     }
-}
+} 
