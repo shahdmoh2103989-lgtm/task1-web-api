@@ -1,5 +1,6 @@
 using task1_web_api.Extensions;
 using task1_web_api.Mapping;
+using task1_web_api.Middlewares;
 
 namespace task1_web_api
 {
@@ -19,8 +20,12 @@ namespace task1_web_api
 
             var app = builder.Build();
 
+            // Custom Middleware
+            app.UseMiddleware<RequestLoggingMiddleware>();
+
             // Logging
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
             logger.LogInformation(
                 "Health Care API Started Successfully");
 
@@ -29,10 +34,16 @@ namespace task1_web_api
                 app.MapOpenApi();
             }
 
+            // HTTPS Redirection
             app.UseHttpsRedirection();
 
+            // CORS
+            app.UseCors("AllowFrontend");
+
+            // Authorization
             app.UseAuthorization();
 
+            // Controllers
             app.MapControllers();
 
             app.Run();

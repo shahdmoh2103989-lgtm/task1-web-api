@@ -3,6 +3,7 @@ using task1_web_api.Data;
 using task1_web_api.Interceptors;
 using task1_web_api.Repositories;
 using task1_web_api.Services;
+using task1_web_api.Filters;
 
 namespace task1_web_api.Extensions
 {
@@ -12,8 +13,10 @@ namespace task1_web_api.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            // Interceptor
             services.AddScoped<AuditInterceptor>();
 
+            // DbContext
             services.AddDbContext<AppDbContext>((serviceProvider, options) =>
             {
                 options.UseSqlServer(
@@ -23,13 +26,36 @@ namespace task1_web_api.Extensions
                     serviceProvider.GetRequiredService<AuditInterceptor>());
             });
 
+            // Controllers
             services.AddControllers();
+
+            // Generic Repository
             services.AddScoped(
-            typeof(IGenericRepository<>),
-             typeof(GenericRepository<>));
+                typeof(IGenericRepository<>),
+                typeof(GenericRepository<>));
+
+            // Patient Repository
             services.AddScoped<IPatientRepository, PatientRepository>();
+
+            // Patient Service
             services.AddScoped<IPatientService, PatientService>();
 
+            // Action Filter
+            services.AddScoped<LogActionFilter>();
+
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+            // OpenAPI
             services.AddOpenApi();
 
             return services;

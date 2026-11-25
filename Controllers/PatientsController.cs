@@ -2,11 +2,13 @@
 using task1_web_api.Common;
 using task1_web_api.DTOs;
 using task1_web_api.Services;
+using task1_web_api.Filters;
 
 namespace task1_web_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ServiceFilter(typeof(LogActionFilter))]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _patientService;
