@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using task1_web_api.Common;
 using task1_web_api.DTOs;
 using task1_web_api.Services;
@@ -8,6 +9,7 @@ namespace task1_web_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [ServiceFilter(typeof(LogActionFilter))]
     public class PatientsController : ControllerBase
     {

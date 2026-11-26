@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using task1_web_api.Extensions;
-using task1_web_api.Mapping;
-using task1_web_api.Middlewares;
 
 namespace task1_web_api
 {
@@ -10,40 +11,75 @@ namespace task1_web_api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Authentication - JWT
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer =
+                            builder.Configuration["Jwt:Issuer"],
+
+                        ValidAudience =
+                            builder.Configuration["Jwt:Audience"],
+
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(
+                                    builder.Configuration["Jwt:Key"]!))
+                    };
+            });
+
+            // Authorization
+            builder.Services.AddAuthorization();
+
             // Application Services
             builder.Services.AddApplicationServices(
                 builder.Configuration);
 
             // AutoMapper
             builder.Services.AddAutoMapper(
-                cfg => { }, typeof(MappingProfile));
+                cfg => { },
+                typeof(Program).Assembly);
+
+            // Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Custom Middleware
-            app.UseMiddleware<RequestLoggingMiddleware>();
-
-            // Logging
-            var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-            logger.LogInformation(
-                "Health Care API Started Successfully");
-
+            // Swagger UI
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
-            // HTTPS Redirection
+            // Middleware
+            app.UseMiddleware<task1_web_api.Middlewares.RequestLoggingMiddleware>();
+
             app.UseHttpsRedirection();
 
-            // CORS
             app.UseCors("AllowFrontend");
 
-            // Authorization
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
-            // Controllers
             app.MapControllers();
 
             app.Run();

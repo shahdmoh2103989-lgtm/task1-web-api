@@ -40,6 +40,9 @@ namespace task1_web_api.Extensions
             // Patient Service
             services.AddScoped<IPatientService, PatientService>();
 
+            // Authentication Service
+            services.AddScoped<IAuthService, AuthService>();
+
             // Action Filter
             services.AddScoped<LogActionFilter>();
 
